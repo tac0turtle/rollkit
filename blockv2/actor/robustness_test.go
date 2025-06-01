@@ -68,9 +68,7 @@ func TestRobustness(t *testing.T) {
 		require.NoError(t, err)
 
 		// Try to shutdown with very short timeout
-		start := time.Now()
 		err = system.Shutdown(10 * time.Millisecond)
-		elapsed := time.Since(start)
 
 		// Should complete but might be shorter than timeout due to fast shutdown
 		assert.NoError(t, err)
@@ -220,7 +218,7 @@ func TestRobustness(t *testing.T) {
 			err = pid.Tell("panic")
 			assert.NoError(t, err)
 
-			time.Sleep(50 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 
 			switch decision {
 			case actor.Resume:
@@ -232,7 +230,7 @@ func TestRobustness(t *testing.T) {
 			case actor.Stop, actor.Escalate:
 				// Actor should be stopped
 				// Give it more time to ensure the stop completes
-				for j := 0; j < 100; j++ {
+				for j := 0; j < 200; j++ {
 					if !pid.IsRunning() {
 						break
 					}

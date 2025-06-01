@@ -28,14 +28,17 @@ func TestSupervisorStrategiesComprehensive(t *testing.T) {
 			},
 		}
 
+		// Create a mock PID for testing
+		mockPID := &actor.PID{}
+
 		// First few restarts should work
 		for i := 0; i < 3; i++ {
-			decision := supervisor.HandleFailure(nil, assert.AnError)
+			decision := supervisor.HandleFailure(mockPID, assert.AnError)
 			assert.Equal(t, actor.Restart, decision)
 		}
 
 		// Fourth restart within time window should escalate
-		decision := supervisor.HandleFailure(nil, assert.AnError)
+		decision := supervisor.HandleFailure(mockPID, assert.AnError)
 		assert.Equal(t, actor.Escalate, decision)
 	})
 
@@ -48,15 +51,18 @@ func TestSupervisorStrategiesComprehensive(t *testing.T) {
 			},
 		}
 
+		// Create a mock PID for testing
+		mockPID := &actor.PID{}
+
 		// First restart
-		decision := supervisor.HandleFailure(nil, assert.AnError)
+		decision := supervisor.HandleFailure(mockPID, assert.AnError)
 		assert.Equal(t, actor.Restart, decision)
 
 		// Wait for time window to reset
 		time.Sleep(60 * time.Millisecond)
 
 		// Should allow restart again after window reset
-		decision = supervisor.HandleFailure(nil, assert.AnError)
+		decision = supervisor.HandleFailure(mockPID, assert.AnError)
 		assert.Equal(t, actor.Restart, decision)
 	})
 
@@ -73,14 +79,16 @@ func TestSupervisorStrategiesComprehensive(t *testing.T) {
 			},
 		}
 
+		// Create a mock PID for testing
+		mockPID := &actor.PID{}
+
 		// Normal error should restart
-		decision := supervisor.HandleFailure(nil, assert.AnError)
+		decision := supervisor.HandleFailure(mockPID, assert.AnError)
 		assert.Equal(t, actor.Restart, decision)
 
 		// Fatal error should stop
-		fatalErr := assert.AnError
-		fatalErr = &fatalError{"fatal"}
-		decision = supervisor.HandleFailure(nil, fatalErr)
+		fatalErr := &fatalError{"fatal"}
+		decision = supervisor.HandleFailure(mockPID, fatalErr)
 		assert.Equal(t, actor.Stop, decision)
 	})
 
@@ -96,9 +104,12 @@ func TestSupervisorStrategiesComprehensive(t *testing.T) {
 			},
 		}
 
+		// Create a mock PID for testing
+		mockPID := &actor.PID{}
+
 		// Temporary error should resume
 		tempErr := &fatalError{"temporary"}
-		decision := supervisor.HandleFailure(nil, tempErr)
+		decision := supervisor.HandleFailure(mockPID, tempErr)
 		assert.Equal(t, actor.Resume, decision)
 	})
 
