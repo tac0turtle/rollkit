@@ -83,6 +83,7 @@ Missing participation at the epoch boundary x/network evaluates participation:
 In this design there is no need to queue IBC transactions as the light client update message can not be relayed to the counter party chain.
 
 <!-- TODO: should we wait for inclusion in the DA layer for the light client update message to be passed? How does this work with IBC timeouts -->
+
 #### Reth/EVM Rollup
 
 - Stake manager contract holds the validator stake/weight and maps an address to a key. It will emit `StakeSnapshot(epoch)` events that will be consumed by the consensus client.
